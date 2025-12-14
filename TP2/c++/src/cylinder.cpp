@@ -27,16 +27,16 @@ Cylinder::Cylinder(float height, float radius, int slices, Shader *shader_progra
         vertices.push_back(0.5f * height);
         //rgb
         vertices.push_back(0.0f);
+        vertices.push_back((1 - i / slices) * 1.0f);
         vertices.push_back(0.0f);
-        vertices.push_back(1.0f);
 
         vertices.push_back(x);
         vertices.push_back(y);
         vertices.push_back(-0.5f * height);
         //rgb
         vertices.push_back(0.0f);
-        vertices.push_back(0.0f);
-        vertices.push_back(1.0f);
+        vertices.push_back(i / slices * 1.0f);
+        vertices.push_back( (1-i / slices) * 1.0f);
     }
 
     // add top and bottom vertices
@@ -45,8 +45,8 @@ Cylinder::Cylinder(float height, float radius, int slices, Shader *shader_progra
     vertices.push_back(0.5f * height);
     //rgb
     vertices.push_back(0.0f);
-    vertices.push_back(0.0f);
     vertices.push_back(1.0f);
+    vertices.push_back(0.0f);
 
     vertices.push_back(0.0f);
     vertices.push_back(0.0f);
@@ -55,20 +55,52 @@ Cylinder::Cylinder(float height, float radius, int slices, Shader *shader_progra
     vertices.push_back(0.0f);
     vertices.push_back(0.0f);
     vertices.push_back(1.0f);
+    
 
     // generate indices
+    int topCenterIndex = 2 * slices;
+    int bottomCenterIndex = 2 * slices + 1;
+
     for (int i = 0; i < slices; i++) {
-        indices.push_back(2 * i);
-        indices.push_back(2 * i + 1);
-        indices.push_back((2 * i + 2) % (2 * slices));
-        indices.push_back(2 * i + 1);
-        indices.push_back((2 * i + 3) % (2 * slices));
-        indices.push_back((2 * i + 2) % (2 * slices));
-        indices.push_back(2 * i);
-        indices.push_back((2 * i + 2) % (2 * slices));
-        indices.push_back(-2);
-        indices.push_back(2 * i + 1);
-        indices.push_back(-1);
+        int topCurrent = 2 * i;
+        int botCurrent = 2 * i + 1;
+        int topNext = (2 * i + 2) % (2 * slices);
+        int botNext = (2 * i + 3) % (2 * slices);
+
+        ////GL_TRIANGLES
+        //// Carre
+        //indices.push_back(topCurrent);
+        //indices.push_back(botCurrent);
+        //indices.push_back(topNext);
+
+        //indices.push_back(botCurrent);
+        //indices.push_back(botNext);
+        //indices.push_back(topNext);
+
+        //// Triangle Haut
+        //indices.push_back(topCurrent);
+        //indices.push_back(topNext);
+        //indices.push_back(topCenterIndex);
+
+        //// Triangle Bas
+        //indices.push_back(botNext);
+        //indices.push_back(botCurrent);
+        
+
+        //GL_TRIANGLE_STRIP
+        // Triangle Haut
+        indices.push_back(topCenterIndex);
+        indices.push_back(topCurrent);
+        indices.push_back(topNext);
+
+        // Carre
+        indices.push_back(botCurrent);
+
+        indices.push_back(botNext);
+
+        //Triangle Bas
+        indices.push_back(bottomCenterIndex);
+
     }
 
     //for (auto i : indices)
@@ -115,7 +147,7 @@ void Cylinder::draw() {
     View = glm::rotate(View, Rotate.y, glm::vec3(1.0f, 0.0f, 0.0f));
     View = glm::rotate(View, Rotate.x, glm::vec3(0.0f, 1.0f, 0.0f));
     View = glm::rotate(View, Rotate.z, glm::vec3(0.0f, 0.0f, 1.0f));
-    glm::mat4 Model = glm::scale(glm::mat4(4.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+    glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(3.0f, 3.0f, 3.0f));
     View *= Model;
 
     GLint viewMatrixLocation = glGetUniformLocation(shader_program_, "view");
