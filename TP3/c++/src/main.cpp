@@ -6,10 +6,49 @@
 #include "node.h"
 #include "shader.h"
 #include <string>
+#include <iostream>
 
 #ifndef SHADER_DIR
 #error "SHADER_DIR not defined"
 #endif
+
+#include <vector>
+#include <cmath>
+
+
+struct Keyframe {
+    float time;
+    float angle;
+};
+
+float getInterpolatedAngle(float currentTime, const std::vector<Keyframe>& keys) {
+    float maxTime = keys.back().time;
+    float loopedTime = fmod(currentTime, maxTime);
+
+    Keyframe kA = keys[0];
+    Keyframe kB = keys[0];
+
+    for (size_t i = 0; i < keys.size() - 1; i++) {
+        if (loopedTime >= keys[i].time && loopedTime < keys[i + 1].time) {
+            kA = keys[i];
+            kB = keys[i + 1];
+            break;
+        }
+    }
+
+    // Calculer le facteur d'interpolation t (entre 0.0 et 1.0)
+    float t = (loopedTime - kA.time) / (kB.time - kA.time);
+
+    // Formule : (1 - t) * valeurA + t * valeurB
+    return glm::mix(kA.angle, kB.angle, t);
+}
+
+// Définition de l'animation de balancier du bras
+std::vector<Keyframe> shoulderAnim = {
+    {0.0f, -45.0f},
+    {1.0f, -135.0f},
+    {2.0f, -45.0f}
+};
 
 int main()
 {
@@ -62,7 +101,7 @@ int main()
     Shape* left_forearm = new Cylinder(color_shader, 1, 0.5f, 16);
     glm::mat4 left_forearm_mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
         * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f))
-        * glm::rotate(glm::mat4(1.0f), glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));;
+        * glm::rotate(glm::mat4(1.0f), glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     Node* left_forearm_node = new Node(left_forearm_mat);
     left_forearm_node->add(left_forearm);
     left_arm_node->add(left_forearm_node);
@@ -87,6 +126,17 @@ int main()
     
 
     viewer.scene_root->add(human);
+
+    auto updateTree = [&]() {
+        //std::cout << "update" << std::endl;
+        float currentAngle = getInterpolatedAngle(glfwGetTime(), shoulderAnim);
+        Node* left_arm = body_node->getChildren()[1]->getChildren()[0];
+        left_arm->setTransform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f))
+            * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f))
+            * glm::rotate(glm::mat4(1.0f), glm::radians(currentAngle), glm::vec3(0.0f, 0.0f, 1.0f)));
+        };
+
+    viewer.animation = updateTree;
 
     viewer.run();
 }

@@ -68,6 +68,10 @@ void Viewer::run()
         // clear draw buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        if (this->animation) {
+            this->animation();
+        }
+
         glm::mat4 model = glm::mat4(1.0f);
 
         glm::mat4 rot_mat = glm::mat4(1.0f);

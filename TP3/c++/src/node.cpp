@@ -11,6 +11,9 @@ Node::Node(const glm::mat4& transform) :
 void Node::add(Node* node) {
     children_.push_back(node);
 }
+std::vector<Node*> Node::getChildren() {
+    return this->children_;
+}
 
 void Node::add(Shape* shape) {
     children_shape_.push_back(shape);
@@ -32,4 +35,8 @@ void Node::key_handler(int key) const {
     for (const auto& child : children_) {
             child->key_handler(key);
     }
+}
+
+void Node::setTransform(const glm::mat4& transform) {
+    this->transform_ = transform;
 }

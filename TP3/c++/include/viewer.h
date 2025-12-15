@@ -18,8 +18,10 @@ public:
     void on_key(int key);
 
     Node *scene_root;
+    std::function<void()> animation = nullptr;
 
 private:
+    
     GLFWwindow* win;
     static void key_callback_static(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
