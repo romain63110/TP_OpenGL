@@ -17,6 +17,8 @@ private:
     GLuint VAO;
     GLuint VBO;
     GLuint IBO;
+
+    int num_indices;
 };
 
 #endif

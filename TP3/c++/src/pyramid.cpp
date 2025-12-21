@@ -27,7 +27,7 @@ Pyramid::Pyramid(Shader* shader_program) : Shape(shader_program) {
         1, 3, 4
     };
 
-    int num_indices = 18;
+    num_indices = 18;
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -63,7 +63,7 @@ void Pyramid::draw(glm::mat4& model, glm::mat4& view, glm::mat4& projection) {
 
     Shape::draw(model, view, projection);
 
-    glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLE_STRIP, this->num_indices, GL_UNSIGNED_INT, 0);
 }
 
 

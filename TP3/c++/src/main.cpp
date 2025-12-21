@@ -1,6 +1,6 @@
 #include "viewer.h"
 #include "triangle.h"
-//#include "pyramid.h"
+#include "mesh.h"
 #include "pyramid.h"
 #include "cylinder.h"
 #include "node.h"
@@ -66,6 +66,21 @@ int main()
         * glm::rotate(glm::mat4(1.0f), glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         
     Node* human = new Node(human_mat);
+
+    //BONUS: load mesh
+    Shape* mesh = new Mesh(color_shader, std::string(ASSETS_DIR) + "Remy.fbx");
+
+    glm::mat4 human2_mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -6.0f))
+        * glm::rotate(glm::mat4(1.0f), glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    Node* human2 = new Node(human2_mat);
+    glm::mat4 mesh_mat = glm::scale(glm::mat4(1.0f), glm::vec3(0.005f));
+    Node* mesh_node = new Node(mesh_mat);
+    mesh_node->add(mesh);
+    human2->add(mesh_node);
+
+    viewer.scene_root->add(human2);
+    //END BONUS
 
     // TODO create the human skeleton
     //body
